@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatbotInputField.value = '';
 
         // Make API call to your backend
-        fetch('http://localhost:3000/chat', { // IMPORTANT: Change this URL to your deployed backend URL
+        fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
