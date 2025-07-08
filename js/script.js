@@ -137,8 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         })
         .catch(error => {
-            if (loadingMessageElement) { // Check if element exists before modifying
-                loadingMessageElement.textContent = 'Sorry, something went wrong. Please try again later.';
+            if (loadingMessageElement) {
+                const errorMessage = error.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
+                loadingMessageElement.textContent = `Error: ${errorMessage}`;
                 loadingMessageElement.classList.add('error');
             }
             console.error('Error sending message:', error);
