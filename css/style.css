@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
 
 :root {
@@ -378,11 +377,12 @@ footer {
     background-color: var(--primary-color);
     color: var(--bg-color);
     border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    border-radius: 30px; /* Make it a rounded rectangle */
+    width: 100px; /* Increased width to fit text */
+    height: 80px; /* Increased height to fit text */
     font-size: 2rem;
     display: flex;
+    flex-direction: column; /* Stack icon and text vertically */
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -391,7 +391,19 @@ footer {
 }
 
 .chatbot-toggle:hover {
-    transform: scale(1.1);
+    transform: scale(1.05); /* Slightly smaller scale on hover */
+}
+
+.chatbot-toggle img {
+    margin-bottom: 5px; /* Space between icon and text */
+}
+
+.chatbot-label {
+    font-size: 0.7rem; /* Smaller font size for the label */
+    color: var(--bg-color); /* Text color */
+    font-family: 'Roboto Mono', monospace; /* Match overall font */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .chatbot-window {
@@ -620,9 +632,18 @@ footer {
     }
 
     .chatbot-toggle {
-        width: 50px;
+        width: 50px; /* Adjusted for mobile */
         height: 50px;
         font-size: 1.5rem;
+    }
+
+    .chatbot-toggle img {
+        width: 25px; /* Smaller icon for mobile */
+        height: 25px;
+    }
+
+    .chatbot-label {
+        font-size: 0.6rem; /* Smaller font for mobile label */
     }
 }
 
