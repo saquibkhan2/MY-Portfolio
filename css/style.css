@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
 
 :root {
@@ -53,7 +52,6 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color);
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
 }
-
 
 h1 {
     font-size: 4rem;
@@ -147,23 +145,24 @@ nav ul li a:hover {
     position: relative;
     z-index: 1;
     display: flex;
-    flex-direction: column; /* Default to column for mobile-first approach */
-    align-items: center;
+    flex-direction: column; /* Stacks content vertically within hero-text */
+    align-items: center; /* Centers content horizontally within hero-text */
     justify-content: center;
+    text-align: center; /* Ensures text within hero-text is centered by default */
 }
 
 .hero-content-wrapper {
     display: flex;
-    flex-direction: row; /* Default to row for desktop */
-    align-items: center;
+    flex-direction: row; /* Arranges image and text side-by-side on desktop */
+    align-items: center; /* Vertically aligns image and text */
     gap: 2rem; /* Space between image and text */
     margin-bottom: 1.5rem;
 }
 
 .hero-image-container {
     margin-bottom: 0; /* Reset margin for flex layout */
-    width: 150px; /* Adjusted size for desktop */
-    height: 150px;
+    width: 120px; /* Adjusted size for desktop */
+    height: 120px;
     border-radius: 50%;
     overflow: hidden;
     background-color: black;
@@ -171,7 +170,7 @@ nav ul li a:hover {
     justify-content: center;
     align-items: center;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.5); /* Reverted border to subtle white */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
     z-index: 10;
 }
 
@@ -188,13 +187,14 @@ nav ul li a:hover {
     -webkit-background-clip: unset;
     -webkit-text-fill-color: unset;
     color: var(--primary-color);
-    font-size: 2.5rem; /* Reduced font size for desktop */
+    font-size: 2.5rem; /* Further reduced font size for desktop */
+    letter-spacing: 2px; /* Adjusted letter spacing */
     margin-bottom: 0.5rem; /* Adjusted margin */
     text-align: left; /* Align text to left */
 }
 
 .hero-text p {
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* Adjusted font size for desktop */
     max-width: 800px;
     margin: 0; /* Reset margin */
     color: var(--text-color);
