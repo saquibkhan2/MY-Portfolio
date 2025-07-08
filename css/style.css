@@ -288,3 +288,94 @@ footer {
 }
 
 /* Removed Glitch Effect */
+
+/* -- Responsive Styles for Mobile -- */
+@media (max-width: 768px) {
+    body {
+        cursor: default; /* Use default cursor on mobile */
+    }
+
+    .cursor-trail {
+        display: none; /* Hide cursor trail on mobile */
+    }
+
+    h1 {
+        font-size: 2.8rem;
+        letter-spacing: 3px;
+    }
+
+    h2 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+
+    header {
+        padding: 1.5rem 0;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo {
+        margin-bottom: 1rem;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    nav ul li {
+        margin: 0.5rem 0;
+        margin-left: 0; /* Reset margin */
+    }
+
+    nav ul li a {
+        font-size: 1.2rem;
+    }
+
+    #hero {
+        padding: 0 1rem;
+    }
+
+    .hero-text p {
+        font-size: 1.2rem;
+        padding: 0 1rem;
+    }
+
+    section {
+        padding: 6rem 1rem;
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .job, .education-item {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+    }
+
+    .hero-text p {
+        font-size: 1rem;
+    }
+
+    .cta-button {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
