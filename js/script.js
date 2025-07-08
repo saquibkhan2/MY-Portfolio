@@ -69,6 +69,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Chatbot functionality
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const chatbotClose = document.getElementById('chatbot-close');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInputField = document.getElementById('chatbot-input-field');
+    const chatbotSendButton = document.getElementById('chatbot-send');
+
+    chatbotToggle.addEventListener('click', () => {
+        chatbotWindow.classList.toggle('open');
+    });
+
+    chatbotClose.addEventListener('click', () => {
+        chatbotWindow.classList.remove('open');
+    });
+
+    chatbotSendButton.addEventListener('click', () => {
+        sendMessage();
+    });
+
+    chatbotInputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const userMessage = chatbotInputField.value.trim();
+        if (userMessage === '') return;
+
+        appendMessage(userMessage, 'user-message');
+        chatbotInputField.value = '';
+
+        // Placeholder for AI response
+        setTimeout(() => {
+            appendMessage('This is a placeholder AI response. Integrate your Perplexity API here!', 'bot-message');
+        }, 1000);
+    }
+
+    function appendMessage(message, type) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', type);
+        messageElement.textContent = message;
+        chatbotMessages.appendChild(messageElement);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
+    }
+
 });
 
 // Add a class to sections for scroll animation
