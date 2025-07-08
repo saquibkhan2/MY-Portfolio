@@ -417,7 +417,7 @@ footer {
     }
 
     h2 {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
     }
 
     .hero-text p {
@@ -427,6 +427,12 @@ footer {
     .cta-button {
         padding: 0.8rem 1.2rem;
         font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 360px) {
+    h2 {
+        font-size: 1.2rem;
     }
 }
 
