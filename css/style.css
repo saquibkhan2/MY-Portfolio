@@ -154,9 +154,30 @@ nav ul li a:hover {
 .hero-text p {
     font-size: 1.5rem;
     max-width: 800px;
-    margin: 0 auto 2.5rem;
+    margin: 0 auto 1.5rem; /* Adjusted margin to make space for image */
     color: var(--text-color);
     letter-spacing: 1px;
+}
+
+.hero-image-container {
+    margin-bottom: 2.5rem;
+    width: 250px; /* Desired width for the image */
+    height: 250px; /* Desired height for the image */
+    border-radius: 50%; /* Make it circular */
+    overflow: hidden;
+    background-color: black; /* Black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* Subtle glow */
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the container, cropping if necessary */
+    object-position: center; /* Center the image within the container */
+    display: block;
 }
 
 .cta-button {
@@ -395,6 +416,13 @@ footer {
     .hero-text p {
         font-size: 1.2rem;
         padding: 0 1rem;
+        margin-bottom: 1rem; /* Adjusted margin for mobile */
+    }
+
+    .hero-image-container {
+        width: 180px; /* Smaller size for mobile */
+        height: 180px;
+        margin-bottom: 1.5rem;
     }
 
     section {
