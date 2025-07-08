@@ -138,22 +138,20 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             if (loadingMessageElement) {
-                const errorMessage = error.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
-                loadingMessageElement.textContent = `Error: ${errorMessage}`;
+                let errorMessage = 'Sorry, something went wrong. Please try again later.';
+                if (error.message) {
+                    errorMessage = `Error: ${error.message}`;
+                } else if (typeof error === 'object' && error !== null) {
+                    errorMessage = `Error: ${JSON.stringify(error)}`;
+                } else {
+                    errorMessage = `Error: ${String(error)}`;
+                }
+                loadingMessageElement.textContent = errorMessage;
                 loadingMessageElement.classList.add('error');
             }
             console.error('Error sending message:', error);
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         });
-    }
-
-    function appendMessage(message, type) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', type);
-        messageElement.textContent = message;
-        chatbotMessages.appendChild(messageElement);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        return messageElement; // Return the element so it can be referenced
     }
 
     function appendMessage(message, type) {
