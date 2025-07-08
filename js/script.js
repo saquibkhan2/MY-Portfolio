@@ -102,8 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessage(userMessage, 'user-message');
         chatbotInputField.value = '';
 
-        // Append a loading message and get its reference
-        const loadingMessageElement = appendMessage('Thinking...', 'bot-message');
+        let loadingMessageElement = null; // Initialize to null
+
+        try {
+            loadingMessageElement = appendMessage('Thinking...', 'bot-message'); // Assign here
+        } catch (e) {
+            console.error("Error appending loading message:", e);
+            // If appendMessage fails, we can't update loadingMessageElement, so just log and return
+            return;
+        }
 
         fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
             method: 'POST',
@@ -119,17 +126,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(data => {
-            if (data.reply) {
-                loadingMessageElement.textContent = data.reply;
-            } else if (data.error) {
-                loadingMessageElement.textContent = `Error: ${data.error}`;
-                loadingMessageElement.classList.add('error');
+            if (loadingMessageElement) { // Check if element exists before modifying
+                if (data.reply) {
+                    loadingMessageElement.textContent = data.reply;
+                } else if (data.error) {
+                    loadingMessageElement.textContent = `Error: ${data.error}`;
+                    loadingMessageElement.classList.add('error');
+                }
             }
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         })
         .catch(error => {
-            loadingMessageElement.textContent = 'Sorry, something went wrong. Please try again later.';
-            loadingMessageElement.classList.add('error');
+            if (loadingMessageElement) { // Check if element exists before modifying
+                loadingMessageElement.textContent = 'Sorry, something went wrong. Please try again later.';
+                loadingMessageElement.classList.add('error');
+            }
             console.error('Error sending message:', error);
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         });
