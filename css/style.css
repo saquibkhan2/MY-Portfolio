@@ -49,6 +49,11 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
 }
 
+.highlight {
+    color: var(--primary-color);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
 
 h1 {
     font-size: 4rem;
