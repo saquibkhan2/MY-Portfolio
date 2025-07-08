@@ -102,10 +102,28 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessage(userMessage, 'user-message');
         chatbotInputField.value = '';
 
-        // Placeholder for AI response
-        setTimeout(() => {
-            appendMessage('This is a placeholder AI response. Integrate your Perplexity API here!', 'bot-message');
-        }, 1000);
+        // Make API call to your backend
+        fetch('http://localhost:3000/chat', { // IMPORTANT: Change this URL to your deployed backend URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingMessageElement.remove(); // Remove loading message
+            if (data.reply) {
+                appendMessage(data.reply, 'bot-message');
+            } else if (data.error) {
+                appendMessage(`Error: ${data.error}`, 'bot-message error');
+            }
+        })
+        .catch(error => {
+            loadingMessageElement.remove(); // Remove loading message
+            console.error('Error sending message:', error);
+            appendMessage('Sorry, something went wrong. Please try again later.', 'bot-message error');
+        });
     }
 
     function appendMessage(message, type) {
