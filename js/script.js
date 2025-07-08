@@ -155,6 +155,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return messageElement; // Return the element so it can be referenced
     }
 
+    function appendMessage(message, type) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', type);
+        messageElement.textContent = message;
+        chatbotMessages.appendChild(messageElement);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        return messageElement; // Return the element so it can be referenced
+    }
+
 });
 
 // Add a class to sections for scroll animation
