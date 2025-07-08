@@ -1,14 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('game-canvas');
-    const ctx = canvas.getContext('2d');
-    const lapCounter = document.getElementById('lap-counter');
-
     const car = {
         x: 100,
         y: 100,
         width: 20,
         height: 40,
-        color: '#FF0000', // Red car
+        color: '#00BFFF', // Sky Blue car
         speed: 0,
         angle: 0,
         rotationSpeed: 0.05,
@@ -20,8 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const track = [
-        { x: 50, y: 50, width: 700, height: 500, color: '#333' }, // Outer track
-        { x: 100, y: 100, width: 600, height: 400, color: '#000' }  // Inner track
+        // Outer boundary
+        { x: 50, y: 50, width: 700, height: 500, color: '#555' }, // Outer track
+        // Inner boundary
+        { x: 150, y: 150, width: 500, height: 300, color: '#000' }, // Inner track
+        // Track segments to create a path
+        { x: 50, y: 50, width: 100, height: 100, color: '#444' }, // Top-left corner
+        { x: 650, y: 50, width: 100, height: 100, color: '#444' }, // Top-right corner
+        { x: 50, y: 450, width: 100, height: 100, color: '#444' }, // Bottom-left corner
+        { x: 650, y: 450, width: 100, height: 100, color: '#444' }, // Bottom-right corner
+        { x: 150, y: 50, width: 500, height: 100, color: '#444' }, // Top straight
+        { x: 150, y: 450, width: 500, height: 100, color: '#444' }, // Bottom straight
+        { x: 50, y: 150, width: 100, height: 300, color: '#444' }, // Left straight
+        { x: 650, y: 150, width: 100, height: 300, color: '#444' }  // Right straight
     ];
 
     const finishLine = {
@@ -62,10 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
         car.y -= Math.cos(car.angle) * car.speed;
 
         // Simple collision with track boundaries (stay within outer track)
-        if (car.x < track[0].x) car.x = track[0].x;
-        if (car.x + car.width > track[0].x + track[0].width) car.x = track[0].x + track[0].width - car.width;
-        if (car.y < track[0].y) car.y = track[0].y;
-        if (car.y + car.height > track[0].y + track[0].height) car.y = track[0].y + track[0].height - car.height;
+        // This logic needs to be updated for the new track shape
+        // For now, keeping it simple to avoid car going off screen
+        if (car.x < 0) car.x = 0;
+        if (car.x + car.width > canvas.width) car.x = canvas.width - car.width;
+        if (car.y < 0) car.y = 0;
+        if (car.y + car.height > canvas.height) car.y = canvas.height - car.height;
 
         // Lap counter logic
         if (car.x > finishLine.x && car.x < finishLine.x + finishLine.width &&
@@ -98,12 +106,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = finishLine.color;
         ctx.fillRect(finishLine.x, finishLine.y, finishLine.width, finishLine.height);
 
-        // Draw car
+        // Draw car doodle
         ctx.save();
         ctx.translate(car.x + car.width / 2, car.y + car.height / 2);
         ctx.rotate(car.angle);
         ctx.fillStyle = car.color;
+
+        // Main body of the car
         ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+
+        // Simple cabin/roof
+        ctx.fillStyle = '#333'; // Darker color for cabin
+        ctx.fillRect(-car.width / 4, -car.height / 2 + 5, car.width / 2, car.height / 3);
+
+        // Headlights (small rectangles at the front)
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(-car.width / 2 + 2, car.height / 2 - 8, 4, 4); // Left headlight
+        ctx.fillRect(car.width / 2 - 6, car.height / 2 - 8, 4, 4); // Right headlight
+
         ctx.restore();
     }
 
