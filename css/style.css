@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
 
 :root {
@@ -141,28 +140,24 @@ nav ul li a:hover {
 .hero-text {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column; /* Default to column for mobile-first approach */
+    align-items: center;
+    justify-content: center;
 }
 
-.hero-text h1 {
-    background: none; /* Removed gradient */
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    color: var(--primary-color); /* Set solid color */
-    margin-bottom: 1rem;
-}
-
-.hero-text p {
-    font-size: 1.5rem;
-    max-width: 800px;
-    margin: 0 auto 1.5rem; /* Adjusted margin to make space for image */
-    color: var(--text-color);
-    letter-spacing: 1px;
+.hero-content-wrapper {
+    display: flex;
+    flex-direction: row; /* Default to row for desktop */
+    align-items: center;
+    gap: 2rem; /* Space between image and text */
+    margin-bottom: 1.5rem;
 }
 
 .hero-image-container {
-    margin-bottom: 2rem; /* Adjusted margin */
-    width: 250px;
-    height: 250px;
+    margin-bottom: 0; /* Reset margin for flex layout */
+    width: 200px; /* Adjusted size for desktop */
+    height: 200px;
     border-radius: 50%;
     overflow: hidden;
     background-color: black;
@@ -170,8 +165,8 @@ nav ul li a:hover {
     justify-content: center;
     align-items: center;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    border: 5px solid red; /* Made border prominent for debugging */
-    z-index: 10; /* Ensure it's above other elements */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Reverted border to subtle white */
+    z-index: 10;
 }
 
 .hero-image {
@@ -187,8 +182,314 @@ nav ul li a:hover {
     -webkit-background-clip: unset;
     -webkit-text-fill-color: unset;
     color: var(--primary-color);
-    margin-top: 1.5rem; /* Added margin-top to push it down from the image */
-    margin-bottom: 1rem;
+    font-size: 3rem; /* Reduced font size for desktop */
+    margin-bottom: 0.5rem; /* Adjusted margin */
+    text-align: left; /* Align text to left */
 }
 
+.hero-text p {
+    font-size: 1.5rem;
+    max-width: 800px;
+    margin: 0; /* Reset margin */
+    color: var(--text-color);
+    letter-spacing: 1px;
+    text-align: left; /* Align text to left */
+}
 
+.cta-button {
+    display: inline-block;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 1rem 2.5rem;
+    border-radius: 5px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2.5rem; /* Add margin to separate from text */
+}
+
+.cta-button:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+    transform: translateY(-5px) scale(1.05);
+}
+
+section {
+    padding: 8rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+}
+
+.project-card {
+    background: var(--surface-color);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    backdrop-filter: blur(5px);
+    position: relative;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(170,170,170,0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+
+.project-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3), 0 0 20px var(--primary-color);
+    background-color: rgba(26, 26, 26, 0.5);
+}
+
+.project-card-content {
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.project-card h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.project-card a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+.job, .education-item {
+    background: var(--surface-color);
+    border-radius: 5px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.job:hover, .education-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2), 0 0 10px var(--primary-color);
+}
+
+footer {
+    text-align: center;
+    padding: 3rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Cursor Trail */
+.cursor-trail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.trail-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+    animation: fadeOutScale 0.5s forwards;
+}
+
+@keyframes fadeOutScale {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0); }
+}
+
+/* Removed Glitch Effect */
+
+/* Mobile Menu Styles */
+.menu-toggle {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
+    z-index: 101; /* Above nav links */
+}
+
+.menu-toggle .bar {
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Animation for hamburger to cross */
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(1) {
+    transform: translateY(11px) rotate(45deg);
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+    transform: translateY(-11px) rotate(-45deg);
+}
+
+/* -- Responsive Styles for Mobile -- */
+@media (max-width: 768px) {
+    body {
+        cursor: default; /* Use default cursor on mobile */
+    }
+
+    .cursor-trail {
+        display: none; /* Hide cursor trail on mobile */
+    }
+
+    h1 {
+        font-size: 2.8rem;
+        letter-spacing: 3px;
+    }
+
+    h2 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+
+    header {
+        padding: 1.5rem 0;
+    }
+
+    nav {
+        flex-direction: row; /* Keep logo and toggle on one line */
+        justify-content: space-between;
+        position: relative; /* For absolute positioning of menu */
+    }
+
+    nav ul {
+        display: none; /* Hide by default on mobile */
+        flex-direction: column;
+        position: absolute;
+        top: 100%; /* Position below header */
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.95); /* Dark background for menu */
+        border-top: 1px solid var(--border-color);
+        padding: 1rem 0;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        z-index: 99;
+    }
+
+    nav.active ul {
+        display: flex; /* Show when active */
+    }
+
+    nav ul li {
+        margin: 0; /* Reset margin */
+        text-align: center;
+        padding: 0.8rem 0;
+    }
+
+    nav ul li a {
+        font-size: 1.2rem;
+        display: block; /* Make links fill space */
+        padding: 0.5rem 0;
+    }
+
+    .menu-toggle {
+        display: flex; /* Show hamburger on mobile */
+    }
+
+    .logo {
+        margin-bottom: 0; /* Reset margin */
+    }
+
+    #hero {
+        padding: 0 1rem;
+    }
+
+    .hero-content-wrapper {
+        flex-direction: column; /* Stack vertically on mobile */
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-text h1 {
+        font-size: 2.2rem; /* Adjusted font size for mobile */
+        text-align: center; /* Center text on mobile */
+    }
+
+    .hero-text p {
+        font-size: 1.2rem;
+        padding: 0 1rem;
+        margin-bottom: 1rem; /* Adjusted margin for mobile */
+        text-align: center; /* Center text on mobile */
+    }
+
+    .hero-image-container {
+        width: 180px; /* Smaller size for mobile */
+        height: 180px;
+        margin-bottom: 0; /* Reset margin */
+        border: 2px solid rgba(255, 255, 255, 0.5); /* Added border for visibility */
+    }
+
+    section {
+        padding: 6rem 1rem;
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .job, .education-item {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .hero-text p {
+        font-size: 1rem;
+    }
+
+    .cta-button {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 360px) {
+    h2 {
+        font-size: 1.2rem;
+    }
+}
