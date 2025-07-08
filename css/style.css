@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
 
 :root {
@@ -157,8 +156,8 @@ nav ul li a:hover {
 
 .hero-image-container {
     margin-bottom: 0; /* Reset margin for flex layout */
-    width: 200px; /* Adjusted size for desktop */
-    height: 200px;
+    width: 150px; /* Adjusted size for desktop */
+    height: 150px;
     border-radius: 50%;
     overflow: hidden;
     background-color: black;
@@ -183,7 +182,7 @@ nav ul li a:hover {
     -webkit-background-clip: unset;
     -webkit-text-fill-color: unset;
     color: var(--primary-color);
-    font-size: 3rem; /* Reduced font size for desktop */
+    font-size: 2.5rem; /* Reduced font size for desktop */
     margin-bottom: 0.5rem; /* Adjusted margin */
     text-align: left; /* Align text to left */
 }
