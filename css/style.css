@@ -368,10 +368,10 @@ footer {
 
 /* Chatbot Styles */
 .chatbot-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 1000 !important;
 }
 
 .chatbot-toggle {
