@@ -114,27 +114,24 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (!response.ok) {
-                // If response is not OK (e.g., 400, 500), parse error from body
                 return response.json().then(err => { throw new Error(err.error || 'Server error'); });
             }
             return response.json();
         })
         .then(data => {
-            // Update the loading message with the actual reply
             if (data.reply) {
                 loadingMessageElement.textContent = data.reply;
             } else if (data.error) {
                 loadingMessageElement.textContent = `Error: ${data.error}`;
-                loadingMessageElement.classList.add('error'); // Add an error class for styling
+                loadingMessageElement.classList.add('error');
             }
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom after update
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         })
         .catch(error => {
-            // Update the loading message with an error message
             loadingMessageElement.textContent = 'Sorry, something went wrong. Please try again later.';
-            loadingMessageElement.classList.add('error'); // Add an error class for styling
+            loadingMessageElement.classList.add('error');
             console.error('Error sending message:', error);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom after update
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         });
     }
 
@@ -143,8 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.classList.add('message', type);
         messageElement.textContent = message;
         chatbotMessages.appendChild(messageElement);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
-        return messageElement; // Return the element for potential removal (like loading message)
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        return messageElement; // Return the element so it can be referenced
     }
 
 });
