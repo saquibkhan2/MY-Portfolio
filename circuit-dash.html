@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Dash</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #game-canvas {
+            border: 1px solid var(--primary-color);
+            background-color: #000;
+            display: block;
+            margin: 20px auto;
+        }
+        #game-container {
+            text-align: center;
+            padding-top: 100px;
+        }
+        #lap-counter {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"><a href="index.html">SK.</a></div>
+                <ul>
+                    <li><a href="index.html#projects">Projects</a></li>
+                    <li><a href="index.html#games">Games</a></li>
+                    <li><a href="index.html#experience">Experience</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="game-container">
+            <h2>Circuit Dash</h2>
+            <canvas id="game-canvas" width="800" height="600"></canvas>
+            <div id="lap-counter">Lap: 0/3</div>
+            <p>Use Arrow Keys to Drive!</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Saquib Iqbal Khan</p>
+        </div>
+    </footer>
+
+    <script src="js/circuit-dash.js"></script>
+</body>
+</html>

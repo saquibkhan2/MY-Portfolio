@@ -1,0 +1,290 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #000000;
+    --primary-color: #FFFFFF;
+    --secondary-color: #AAAAAA;
+    --text-color: #E0E0E0;
+    --surface-color: #1A1A1A;
+    --border-color: #333333;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Roboto Mono', monospace;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: url('../wavy-black-white-background.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    cursor: none; /* Hide default cursor */
+    animation: background-pan 60s linear infinite;
+}
+
+@keyframes background-pan {
+    from { background-position: 0% 0%; }
+    to { background-position: 100% 100%; }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 0px var(--secondary-color);
+    text-transform: uppercase;
+}
+
+
+h1 {
+    font-size: 4rem;
+    letter-spacing: 5px;
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    letter-spacing: 3px;
+}
+
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem 0;
+    z-index: 100;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+
+header.scrolled {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 0px var(--secondary-color);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 3rem;
+}
+
+nav ul li a {
+    color: var(--text-color);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+nav ul li a:hover {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+#hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,1) 70%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Removed F1 track lines effect */
+
+.hero-text {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-text h1 {
+    background: none; /* Removed gradient */
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    color: var(--primary-color); /* Set solid color */
+    margin-bottom: 1rem;
+}
+
+.hero-text p {
+    font-size: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto 2.5rem;
+    color: var(--text-color);
+    letter-spacing: 1px;
+}
+
+.cta-button {
+    display: inline-block;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 1rem 2.5rem;
+    border-radius: 5px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cta-button:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+    transform: translateY(-5px) scale(1.05);
+}
+
+section {
+    padding: 8rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+}
+
+.project-card {
+    background: var(--surface-color);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    backdrop-filter: blur(5px);
+    position: relative;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(170,170,170,0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+
+.project-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3), 0 0 20px var(--primary-color);
+    background-color: rgba(26, 26, 26, 0.5);
+}
+
+.project-card-content {
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.project-card h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.project-card a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+.job, .education-item {
+    background: var(--surface-color);
+    border-radius: 5px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.job:hover, .education-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2), 0 0 10px var(--primary-color);
+}
+
+footer {
+    text-align: center;
+    padding: 3rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Cursor Trail */
+.cursor-trail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.trail-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+    animation: fadeOutScale 0.5s forwards;
+}
+
+@keyframes fadeOutScale {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0); }
+}
+
+/* Removed Glitch Effect */
