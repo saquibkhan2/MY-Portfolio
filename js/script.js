@@ -53,6 +53,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Mobile menu toggle
+    const mobileMenu = document.getElementById('mobile-menu');
+    const nav = document.querySelector('nav');
+    const navLinks = document.querySelectorAll('nav ul li a');
+
+    mobileMenu.addEventListener('click', () => {
+        nav.classList.toggle('active');
+    });
+
+    // Close mobile menu when a link is clicked
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            nav.classList.remove('active');
+        });
+    });
+
 });
 
 // Add a class to sections for scroll animation
