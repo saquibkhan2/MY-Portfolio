@@ -102,7 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessage(userMessage, 'user-message');
         chatbotInputField.value = '';
 
-        // Make API call to your backend
+        // Append a loading message and get its reference
+        const loadingMessageElement = appendMessage('Thinking...', 'bot-message');
+
         fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
             method: 'POST',
             headers: {
@@ -110,19 +112,29 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({ message: userMessage })
         })
-        .then(response => response.json())
-        .then(data => {
-            loadingMessageElement.remove(); // Remove loading message
-            if (data.reply) {
-                appendMessage(data.reply, 'bot-message');
-            } else if (data.error) {
-                appendMessage(`Error: ${data.error}`, 'bot-message error');
+        .then(response => {
+            if (!response.ok) {
+                // If response is not OK (e.g., 400, 500), parse error from body
+                return response.json().then(err => { throw new Error(err.error || 'Server error'); });
             }
+            return response.json();
+        })
+        .then(data => {
+            // Update the loading message with the actual reply
+            if (data.reply) {
+                loadingMessageElement.textContent = data.reply;
+            } else if (data.error) {
+                loadingMessageElement.textContent = `Error: ${data.error}`;
+                loadingMessageElement.classList.add('error'); // Add an error class for styling
+            }
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom after update
         })
         .catch(error => {
-            loadingMessageElement.remove(); // Remove loading message
+            // Update the loading message with an error message
+            loadingMessageElement.textContent = 'Sorry, something went wrong. Please try again later.';
+            loadingMessageElement.classList.add('error'); // Add an error class for styling
             console.error('Error sending message:', error);
-            appendMessage('Sorry, something went wrong. Please try again later.', 'bot-message error');
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom after update
         });
     }
 
@@ -132,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageElement.textContent = message;
         chatbotMessages.appendChild(messageElement);
         chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Scroll to bottom
+        return messageElement; // Return the element for potential removal (like loading message)
     }
 
 });
