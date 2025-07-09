@@ -59,13 +59,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('nav ul li a');
 
     mobileMenu.addEventListener('click', () => {
-        nav.classList.toggle('active');
+        nav.querySelector('ul').classList.toggle('active');
     });
 
     // Close mobile menu when a link is clicked
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            nav.classList.remove('active');
+            nav.querySelector('ul').classList.remove('active');
         });
     });
 
