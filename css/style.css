@@ -394,6 +394,12 @@ footer {
     transform: scale(1.05); /* Slightly smaller scale on hover */
 }
 
+.chatbot-icon {
+    width: 30px;
+    height: 30px;
+    fill: var(--bg-color);
+}
+
 .chatbot-toggle img {
     margin-bottom: 5px; /* Space between icon and text */
 }
