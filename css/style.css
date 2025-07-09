@@ -534,7 +534,8 @@ footer {
     }
 
     nav ul.active {
-        display: flex;
+        display: flex !important;
+        z-index: 999; /* Ensure it's on top */
     }
 
     nav ul li {
