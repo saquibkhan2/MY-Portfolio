@@ -73,118 +73,103 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotToggle = document.getElementById('chatbot-toggle');
     const chatbotWindow = document.getElementById('chatbot-window');
     const chatbotClose = document.getElementById('chatbot-close');
+    const chatbotMinimize = document.getElementById('chatbot-minimize');
+    const chatbotBody = document.getElementById('chatbot-body');
     const chatbotMessages = document.getElementById('chatbot-messages');
     const chatbotInputField = document.getElementById('chatbot-input-field');
     const chatbotSendButton = document.getElementById('chatbot-send');
 
-    function resizeChatbotWindow() {
-        if (chatbotWindow.classList.contains('open') && window.innerWidth <= 768) {
-            chatbotWindow.style.height = `${window.innerHeight}px`;
-        }
-    }
-
-    window.addEventListener('resize', resizeChatbotWindow);
+    let isOpen = false;
+    let isMinimized = false;
 
     chatbotToggle.addEventListener('click', () => {
-        const isOpen = chatbotWindow.classList.toggle('open');
+        isOpen = !isOpen;
         if (isOpen) {
-            chatbotInputField.focus();
-            if (window.innerWidth <= 768) {
-                document.body.classList.add('chatbot-open-mobile');
-                resizeChatbotWindow();
-            }
+            chatbotWindow.style.display = 'block';
+            isMinimized = false;
+            chatbotBody.style.display = 'block';
         } else {
-            if (window.innerWidth <= 768) {
-                document.body.classList.remove('chatbot-open-mobile');
-                chatbotWindow.style.height = '';
-            }
+            chatbotWindow.style.display = 'none';
         }
     });
 
     chatbotClose.addEventListener('click', () => {
-        chatbotWindow.classList.remove('open');
-        if (window.innerWidth <= 768) {
-            document.body.classList.remove('chatbot-open-mobile');
-            chatbotWindow.style.height = '';
-        }
+        isOpen = false;
+        chatbotWindow.style.display = 'none';
     });
 
-    chatbotSendButton.addEventListener('click', () => {
-        sendMessage();
+    chatbotMinimize.addEventListener('click', () => {
+        isMinimized = !isMinimized;
+        chatbotBody.style.display = isMinimized ? 'none' : 'block';
     });
 
+    chatbotSendButton.addEventListener('click', sendMessage);
     chatbotInputField.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             sendMessage();
         }
     });
 
     function sendMessage() {
-        const userMessage = chatbotInputField.value.trim();
-        if (userMessage === '') return;
+        const messageText = chatbotInputField.value.trim();
+        if (messageText === '') return;
 
-        appendMessage(userMessage, 'user-message');
+        appendMessage(messageText, 'user');
         chatbotInputField.value = '';
+        showTypingIndicator();
 
-        let loadingMessageElement = null; // Initialize to null
-
-        try {
-            loadingMessageElement = appendMessage('Thinking...', 'bot-message'); // Assign here
-        } catch (e) {
-            console.error("Error appending loading message:", e);
-            // If appendMessage fails, we can't update loadingMessageElement, so just log and return
-            return;
-        }
-
-        fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: userMessage })
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.error || 'Server error'); });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (loadingMessageElement) { // Check if element exists before modifying
-                if (data.reply) {
-                    loadingMessageElement.textContent = data.reply;
-                } else if (data.error) {
-                    loadingMessageElement.textContent = `Error: ${data.error}`;
-                    loadingMessageElement.classList.add('error');
-                }
-            }
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        })
-        .catch(error => {
-            if (loadingMessageElement) {
-                let errorMessage = 'Sorry, something went wrong. Please try again later.';
-                if (error.message) {
-                    errorMessage = `Error: ${error.message}`;
-                } else if (typeof error === 'object' && error !== null) {
-                    errorMessage = `Error: ${JSON.stringify(error)}`;
-                } else {
-                    errorMessage = `Error: ${String(error)}`;
-                }
-                loadingMessageElement.textContent = errorMessage;
-                loadingMessageElement.classList.add('error');
-            }
-            console.error('Error sending message:', error);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        });
+        // Simulate AI response
+        setTimeout(() => {
+            hideTypingIndicator();
+            appendMessage('Thanks for your message! This is a demo response from your AI assistant.', 'bot');
+        }, 1500);
     }
 
-    function appendMessage(message, type) {
+    function appendMessage(text, type) {
         const messageElement = document.createElement('div');
-        messageElement.classList.add('message', type);
-        messageElement.textContent = message;
+        messageElement.className = `message ${type}-message`;
+
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+
+        const icon = document.createElement('svg');
+        icon.className = 'message-icon';
+        icon.setAttribute('viewBox', '0 0 24 24');
+        icon.innerHTML = type === 'user' ? 
+            '<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>' :
+            '<path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M12 18v-2"></path><path d="M12 12v-2"></path>';
+
+        const p = document.createElement('p');
+        p.textContent = text;
+
+        messageContent.appendChild(icon);
+        messageContent.appendChild(p);
+        messageElement.appendChild(messageContent);
         chatbotMessages.appendChild(messageElement);
         chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        return messageElement; // Return the element so it can be referenced
+    }
+
+    function showTypingIndicator() {
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'message bot-message typing-indicator';
+        typingIndicator.innerHTML = `
+            <div class="message-content">
+                <svg class="message-icon" viewBox="0 0 24 24"><path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M12 18v-2"></path><path d="M12 12v-2"></path></svg>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        `;
+        chatbotMessages.appendChild(typingIndicator);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const typingIndicator = document.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
     }
 
 });
