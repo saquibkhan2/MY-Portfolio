@@ -13,10 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const targetElement = document.querySelector(this.getAttribute('href'));
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
         });
     });
 
@@ -47,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dot.style.top = `${e.clientY}px`;
         cursorTrail.appendChild(dot);
 
-        // Remove dots after animation
         dot.addEventListener('animationend', () => {
             dot.remove();
         });
@@ -58,26 +59,108 @@ document.addEventListener('DOMContentLoaded', () => {
     const nav = document.querySelector('nav');
     const navLinks = document.querySelectorAll('nav ul li a');
 
-    mobileMenu.addEventListener('click', () => {
-        nav.querySelector('ul').classList.toggle('active');
-    });
-
-    // Close mobile menu when a link is clicked
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            nav.querySelector('ul').classList.remove('active');
-        });
-    });
-
-    // ID Card Flip
-    const idCard = document.querySelector('.id-card');
-    if (idCard) {
-        idCard.addEventListener('click', () => {
-            idCard.classList.toggle('flipped');
+    if (mobileMenu && nav) {
+        mobileMenu.addEventListener('click', () => {
+            nav.querySelector('ul').classList.toggle('active');
+            mobileMenu.classList.toggle('active');
         });
     }
 
-    // Chatbot functionality
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (nav.querySelector('ul').classList.contains('active')) {
+                nav.querySelector('ul').classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+    });
+
+    // --- Hanging ID Card Logic ---
+    const idCardContainer = document.getElementById('id-card-container');
+    const idCard = document.getElementById('id-card');
+    const idCardNumber = document.getElementById('id-card-number');
+    const validDate = document.getElementById('valid-date');
+
+    if (idCardContainer && idCard && idCardNumber && validDate) {
+        idCardNumber.textContent = `#${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        const expiryDate = new Date();
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+        validDate.textContent = expiryDate.toLocaleDateString();
+
+        let isFlipped = false;
+        let isDragging = false;
+        let startX, startY, initialX = 0, initialY = 0;
+
+        idCard.addEventListener('click', (e) => {
+            if (!isDragging) {
+                isFlipped = !isFlipped;
+                idCard.classList.toggle('flipped');
+            }
+        });
+
+        idCardContainer.addEventListener('mousemove', (e) => {
+            if (!isDragging) {
+                const rect = idCardContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateY = (x - centerX) / 15; 
+                const rotateX = (centerY - y) / 15;
+                idCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`;
+            }
+        });
+
+        idCardContainer.addEventListener('mouseleave', () => {
+            if (!isDragging) {
+                idCard.style.transition = 'transform 0.5s ease';
+                idCard.style.transform = `rotateX(0deg) rotateY(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`;
+            }
+        });
+        
+        idCardContainer.addEventListener('mouseenter', () => {
+             idCard.style.transition = '';
+        });
+
+        idCardContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            idCardContainer.style.cursor = 'grabbing';
+            startX = e.clientX;
+            startY = e.clientY;
+            const transform = window.getComputedStyle(idCardContainer).transform;
+            if (transform !== 'none') {
+                const matrix = new DOMMatrix(transform);
+                initialX = matrix.m41;
+                initialY = matrix.m42;
+            } else {
+                initialX = 0;
+                initialY = 0;
+            }
+            e.preventDefault();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                idCardContainer.style.cursor = 'grab';
+                idCardContainer.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)';
+                idCardContainer.style.transform = 'translate(0, 0)';
+                setTimeout(() => {
+                    idCardContainer.style.transition = '';
+                }, 400);
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                idCardContainer.style.transform = `translate(${initialX + dx}px, ${initialY + dy}px)`;
+            }
+        });
+    }
+
+    // --- Chatbot functionality ---
     const chatbotToggle = document.getElementById('chatbot-toggle');
     const chatbotWindow = document.getElementById('chatbot-window');
     const chatbotClose = document.getElementById('chatbot-close');
@@ -87,131 +170,155 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotInputField = document.getElementById('chatbot-input-field');
     const chatbotSendButton = document.getElementById('chatbot-send');
 
-    let isOpen = false;
-    let isMinimized = false;
+    if (chatbotToggle) {
+        let isOpen = false;
+        let isMinimized = false;
 
-    chatbotToggle.addEventListener('click', () => {
-        isOpen = !isOpen;
-        if (isOpen) {
-            chatbotWindow.style.display = 'block';
-            isMinimized = false;
-            chatbotBody.style.display = 'block';
-        } else {
-            chatbotWindow.style.display = 'none';
-        }
-    });
+        // Drag functionality
+        let isDragging = false;
+        let initialX, initialY;
+        let offsetX, offsetY;
 
-    chatbotClose.addEventListener('click', () => {
-        isOpen = false;
-        chatbotWindow.style.display = 'none';
-    });
-
-    chatbotMinimize.addEventListener('click', () => {
-        isMinimized = !isMinimized;
-        chatbotBody.style.display = isMinimized ? 'none' : 'block';
-    });
-
-    chatbotSendButton.addEventListener('click', sendMessage);
-    chatbotInputField.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    function sendMessage() {
-        const userMessage = chatbotInputField.value.trim();
-        if (userMessage === '') return;
-
-        appendMessage(userMessage, 'user');
-        chatbotInputField.value = '';
-        showTypingIndicator();
-
-        fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: userMessage })
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.error || 'Server error'); });
+        chatbotWindow.addEventListener('mousedown', (e) => {
+            if (e.target.id === 'drag-handle-top-left') { // Only drag from top-left handle
+                isDragging = true;
+                initialX = e.clientX;
+                initialY = e.clientY;
+                const rect = chatbotWindow.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                chatbotWindow.style.transition = 'none'; // Disable transition during drag
+                chatbotWindow.style.cursor = 'grabbing';
             }
-            return response.json();
-        })
-        .then(data => {
-            hideTypingIndicator();
-            if (data.reply) {
-                appendMessage(data.reply, 'bot');
-            } else if (data.error) {
-                appendMessage(`Error: ${data.error}`, 'bot');
-            }
-        })
-        .catch(error => {
-            hideTypingIndicator();
-            let errorMessage = 'Sorry, something went wrong. Please try again later.';
-            if (error.message) {
-                errorMessage = `Error: ${error.message}`;
-            } else if (typeof error === 'object' && error !== null) {
-                errorMessage = `Error: ${JSON.stringify(error)}`;
-            } else {
-                errorMessage = `Error: ${String(error)}`;
-            }
-            appendMessage(errorMessage, 'bot');
-            console.error('Error sending message:', error);
         });
-    }
 
-    function appendMessage(text, type) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${type}-message`;
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
 
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
+                // Boundary checks
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const chatbotRect = chatbotWindow.getBoundingClientRect();
 
-        const icon = document.createElement('svg');
-        icon.className = 'message-icon';
-        icon.setAttribute('viewBox', '0 0 24 24');
-        icon.innerHTML = type === 'user' ? 
-            '<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>' :
-            '<path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M12 18v-2"></path><path d="M12 12v-2"></path>';
+                if (newX < 0) newX = 0;
+                if (newY < 0) newY = 0;
+                if (newX + chatbotRect.width > windowWidth) newX = windowWidth - chatbotRect.width;
+                if (newY + chatbotRect.height > windowHeight) newY = windowHeight - chatbotRect.height;
 
-        const p = document.createElement('p');
-        p.textContent = text;
+                chatbotWindow.style.left = `${newX}px`;
+                chatbotWindow.style.top = `${newY}px`;
+                chatbotWindow.style.right = 'auto'; // Disable right/bottom positioning
+                chatbotWindow.style.bottom = 'auto';
+            }
+        });
 
-        messageContent.appendChild(icon);
-        messageContent.appendChild(p);
-        messageElement.appendChild(messageContent);
-        chatbotMessages.appendChild(messageElement);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                chatbotWindow.style.transition = ''; // Re-enable transition
+                chatbotWindow.style.cursor = 'grab';
+            }
+        });
 
-    function showTypingIndicator() {
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'message bot-message typing-indicator';
-        typingIndicator.innerHTML = `
-            <div class="message-content">
-                <svg class="message-icon" viewBox="0 0 24 24"><path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M12 18v-2"></path><path d="M12 12v-2"></path></svg>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        `;
-        chatbotMessages.appendChild(typingIndicator);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
+        chatbotToggle.addEventListener('click', () => {
+            isOpen = !isOpen;
+            if (isOpen) {
+                chatbotWindow.classList.add('open');
+                isMinimized = false;
+                chatbotBody.classList.remove('minimized');
+            } else {
+                chatbotWindow.classList.remove('open');
+            }
+        });
 
-    function hideTypingIndicator() {
-        const typingIndicator = document.querySelector('.typing-indicator');
-        if (typingIndicator) {
-            typingIndicator.remove();
+        chatbotClose.addEventListener('click', () => {
+            isOpen = false;
+            chatbotWindow.classList.remove('open');
+        });
+
+        chatbotMinimize.addEventListener('click', () => {
+            isMinimized = !isMinimized;
+            chatbotBody.classList.toggle('minimized');
+        });
+
+        chatbotSendButton.addEventListener('click', sendMessage);
+        chatbotInputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const userMessage = chatbotInputField.value.trim();
+            if (userMessage === '') return;
+
+            appendMessage(userMessage, 'user');
+            chatbotInputField.value = '';
+            showTypingIndicator();
+
+            fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Server error'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                hideTypingIndicator();
+                if (data.reply) {
+                    appendMessage(data.reply, 'bot');
+                } else if (data.error) {
+                    appendMessage(`Error: ${data.error}`, 'bot');
+                }
+            })
+            .catch(error => {
+                hideTypingIndicator();
+                let errorMessage = 'Sorry, something went wrong. Please try again later.';
+                if (error.message) {
+                    errorMessage = `Error: ${error.message}`;
+                }
+                appendMessage(errorMessage, 'bot');
+                console.error('Error sending message:', error);
+            });
+        }
+
+        function appendMessage(text, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${type}-message`;
+            const p = document.createElement('p');
+            p.textContent = text;
+            messageElement.appendChild(p);
+            chatbotMessages.appendChild(messageElement);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'message bot-message typing-indicator';
+            typingIndicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            chatbotMessages.appendChild(typingIndicator);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.querySelector('.typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
         }
     }
-
 });
 
-// Add a class to sections for scroll animation
 const style = document.createElement('style');
 style.innerHTML = `
     section {

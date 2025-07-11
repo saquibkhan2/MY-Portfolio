@@ -30,50 +30,93 @@
     </header>
 
     <main>
-        <section id="id-card-section">
-            <div class="id-card-container">
-                <div class="id-card">
-                    <div class="id-card-inner">
-                        <div class="id-card-front">
+        <section id="hanging-id-card-section">
+            <div id="id-card-container" class="id-card-container">
+                <!-- This div will be for the whole draggable element -->
+                <div class="hanging-id-card-wrapper">
+                    <!-- ID Strap System -->
+                    <div class="id-strap-system">
+                        <div class="id-badge-reel">
+                            <div class="id-badge-reel-inner">ID</div>
+                        </div>
+                        <div class="id-cord"></div>
+                        <div class="id-clip"></div>
+                    </div>
+
+                    <!-- The Flippable Card -->
+                    <div id="id-card" class="id-card">
+                        <!-- Front Side -->
+                        <div class="id-card-face id-card-front">
+                            <div class="id-card-bg-pattern"></div>
                             <div class="id-card-header">
                                 <div class="id-card-header-left">
                                     <img src="img/MY-Photo.jpeg" alt="Saquib Khan" class="id-card-avatar">
                                     <div>
-                                        <h3>Saquib Iqbal Khan</h3>
-                                        <p>AI/ML Engineer</p>
+                                        <h3 class="id-card-name">Saquib Iqbal Khan</h3>
+                                        <p class="id-card-title">Computer Science Engineer</p>
                                     </div>
                                 </div>
                                 <div class="id-card-header-right">
-                                    <p>ID CARD</p>
-                                    <p>#123456</p>
+                                    <div class="id-card-label">ID CARD</div>
+                                    <div id="id-card-number" class="id-card-number">#</div>
                                 </div>
                             </div>
-                            <div class="id-card-body">
-                                <p>Google</p>
+                            <div class="id-card-company-section">
+                                <p class="id-card-company">AI/ML | Cloud Solutions | Python Developer</p>
+                                <div class="id-card-divider"></div>
                             </div>
                             <div class="id-card-footer">
-                                <p>Valid until: 12/25</p>
-                                <p>Tap to flip</p>
+                                <div class="id-card-valid-date">
+                                    <p>Valid until</p>
+                                    <p id="valid-date" class="font-mono"></p>
+                                </div>
+                                <div class="id-card-flip-instruction">
+                                    <p>Tap to flip</p>
+                                </div>
                             </div>
+                            <div class="id-card-hologram"></div>
                         </div>
-                        <div class="id-card-back">
+                        <!-- Back Side -->
+                        <div class="id-card-face id-card-back">
+                            <div class="id-card-bg-pattern-dots"></div>
                             <div class="id-card-back-header">
-                                <h3>Saquib Iqbal Khan</h3>
-                                <p>Contact Information</p>
+                                <h3 class="id-card-name">Saquib Iqbal Khan</h3>
+                                <p class="id-card-title">Contact Information</p>
                             </div>
                             <div class="id-card-back-body">
-                                <p><span>Email:</span> saquib44.khan@gmail.com</p>
-                                <p><span>Phone:</span> +91 8084783493</p>
-                                <p><span>Location:</span> Chennai, India</p>
-                                <p><span>Website:</span> saquibkhan.dev</p>
+                                <p class="id-contact-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="id-contact-icon"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <span>saquib44.khan@gmail.com</span>
+                                </p>
+                                <p class="id-contact-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="id-contact-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    <span>+91 8084783493</span>
+                                </p>
+                                <p class="id-contact-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="id-contact-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    <span>Chennai, India</span>
+                                </p>
                             </div>
                             <div class="id-card-back-footer">
-                                <a href="https://github.com/saquibkhan2" target="_blank">GitHub</a>
-                                <a href="https://www.linkedin.com/in/saquib-iqbal-khan-541a33227/" target="_blank">LinkedIn</a>
+                                <div class="id-social-links">
+                                    <a href="https://github.com/saquibkhan2" target="_blank" rel="noopener noreferrer" class="id-social-link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="id-social-icon"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/saquib-iqbal-khan-541a33227/" target="_blank" rel="noopener noreferrer" class="id-social-link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="id-social-icon"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                                    </a>
+                                </div>
+                                <p class="id-card-flip-instruction">Tap to flip back</p>
                             </div>
+                            <div class="id-card-hologram"></div>
                         </div>
                     </div>
+                    <!-- Shadow -->
+                    <div class="id-card-shadow"></div>
                 </div>
+            </div>
+            <div class="id-card-instructions">
+                <p>Drag to move • Click to flip • Hover to activate</p>
             </div>
         </section>
         <section id="about">

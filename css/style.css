@@ -419,8 +419,20 @@ footer {
     border-radius: 16px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     overflow: hidden;
-    display: none; /* Initially hidden */
+    display: none; /* Hidden by default */
+    flex-direction: column; /* Added to stack children vertically */
 }
+
+.chatbot-window.open {
+    display: flex; /* Show when open class is present */
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 384px;
+    height: 350px; /* Fixed height for desktop */
+}
+
+
 
 .chatbot-header {
     display: flex;
@@ -429,6 +441,7 @@ footer {
     padding: 16px;
     background-image: linear-gradient(to right, rgba(79, 70, 229, 0.3), rgba(168, 85, 247, 0.3));
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
 }
 
 .chatbot-header-title {
@@ -481,10 +494,10 @@ footer {
 }
 
 .chatbot-body {
-    height: 320px;
     overflow-y: auto;
     padding: 16px;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(17, 24, 39, 0.5));
+    flex-grow: 1;
 }
 
 .chatbot-messages {
@@ -583,6 +596,7 @@ footer {
     display: flex;
     align-items: flex-end;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .chatbot-input textarea {
@@ -591,7 +605,7 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     color: white;
-    padding: 12px;
+    padding: 12px 48px 12px 12px;
     resize: none;
     min-height: 44px;
     max-height: 120px;
@@ -624,97 +638,273 @@ footer {
     cursor: not-allowed;
 }
 
-#id-card-section {
-    padding: 8rem 0;
+/* Interactive ID Card Section */
+#hanging-id-card-section {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Use min-height to ensure it takes at least the full viewport height */
+    padding: 4rem 2rem;
+    background: radial-gradient(ellipse at center, rgba(10, 10, 20, 1) 0%, rgba(0, 0, 0, 1) 70%);
+    overflow: hidden;
+    perspective: 1200px;
 }
 
 .id-card-container {
-    perspective: 1000px;
+    position: relative;
+    cursor: grab;
 }
 
-.id-card {
-    width: 320px;
-    height: 192px;
+.id-card-container:active {
+    cursor: grabbing;
+}
+
+.hanging-id-card-wrapper {
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.8s;
+    transition: transform 0.2s ease-out;
+}
+
+/* ID Strap System */
+.id-strap-system {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: -2px; /* Overlap with the card slightly */
+    transform-origin: top center;
+}
+
+.id-badge-reel {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(to br, #4a4a4a, #2a2a2a);
+    border-radius: 50%;
+    border: 2px solid #6a6a6a;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: -2px;
+    z-index: 1;
+}
+
+.id-cord {
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, #888, #444);
+}
+
+.id-clip {
+    width: 24px;
+    height: 32px;
+    background: linear-gradient(to br, #ccc, #888);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    margin-top: -2px;
+}
+
+/* The Card Itself */
+.id-card {
+    width: 320px;
+    height: 480px; /* Changed to vertical orientation */
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transform-origin: top center;
 }
 
 .id-card.flipped {
     transform: rotateY(180deg);
 }
 
-.id-card-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-}
-
-.id-card-front,
-.id-card-back {
+.id-card-face {
     position: absolute;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
     border-radius: 16px;
-    background: linear-gradient(to br, #1a1a1a, #000000);
+    background: linear-gradient(to br, #1e1e2f, #10101a);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
-    padding: 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .id-card-back {
     transform: rotateY(180deg);
 }
 
-.id-card-header {
-    display: flex;
-    justify-content: space-between;
-}
-
+/* Card Content Styling */
 .id-card-header-left {
     display: flex;
     align-items: center;
+    gap: 16px;
 }
 
 .id-card-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    margin-right: 12px;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
 }
 
-.id-card-header-right p {
+.id-card-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.id-card-title {
+    font-size: 0.9rem;
+    color: #60a5fa; /* Accent color */
+}
+
+.id-card-header-right {
     text-align: right;
+    font-size: 0.75rem;
 }
 
-.id-card-body {
+.id-card-label {
+    font-weight: bold;
+    color: #60a5fa;
+}
+
+.id-card-number {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.id-card-company-section {
     text-align: center;
+    margin: auto 0;
+}
+
+.id-card-company {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.id-card-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    margin-top: 8px;
 }
 
 .id-card-footer {
     display: flex;
     justify-content: space-between;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
 }
 
+/* Back of Card */
 .id-card-back-header {
     text-align: center;
+    margin-bottom: 24px;
 }
 
-.id-card-back-body span {
-    font-weight: bold;
+.id-card-back-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-grow: 1;
+}
+
+.id-contact-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+}
+
+.id-contact-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #60a5fa;
 }
 
 .id-card-back-footer {
+    text-align: center;
+}
+
+.id-social-links {
     display: flex;
     justify-content: center;
     gap: 16px;
+    margin-bottom: 16px;
+}
+
+.id-social-link {
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.id-social-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.id-social-icon {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+/* Effects */
+.id-card-hologram {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.id-card-container:hover .id-card-hologram {
+    opacity: 1;
+}
+
+.id-card-shadow {
+    position: absolute;
+    bottom: -40px;
+    left: 5%;
+    width: 90%;
+    height: 20px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 80%);
+    border-radius: 50%;
+    transition: all 0.3s ease-out;
+}
+
+.id-card-instructions {
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+
+.drag-handle-top-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1); /* Light background for visibility */
+    cursor: grab;
+    z-index: 1001; /* Ensure it's above other content */
+    border-radius: 5px; /* Slightly rounded corners */
 }
 
 /* -- Responsive Styles for Mobile -- */
@@ -767,19 +957,18 @@ footer {
     }
 
     .chatbot-window {
-        display: none; /* Hidden by default on mobile */
+        /* No display property here, let .chatbot-window.open handle it */
     }
 
     .chatbot-window.open {
         display: flex; /* Display when open class is present */
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
-        bottom: 0;
-        right: 0;
-        top: 0;
-        left: 0;
         position: fixed;
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        height: 65vh; /* Reduced height for mobile */
+        top: auto; /* Let height and bottom define position */
+        border-radius: 16px;
         z-index: 1002;
         flex-direction: column;
     }
