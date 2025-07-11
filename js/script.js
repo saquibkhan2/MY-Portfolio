@@ -112,18 +112,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function sendMessage() {
-        const messageText = chatbotInputField.value.trim();
-        if (messageText === '') return;
+        const userMessage = chatbotInputField.value.trim();
+        if (userMessage === '') return;
 
-        appendMessage(messageText, 'user');
+        appendMessage(userMessage, 'user');
         chatbotInputField.value = '';
         showTypingIndicator();
 
-        // Simulate AI response
-        setTimeout(() => {
+        fetch('https://my-portfolio-chatbot-backend.onrender.com/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.error || 'Server error'); });
+            }
+            return response.json();
+        })
+        .then(data => {
             hideTypingIndicator();
-            appendMessage('Thanks for your message! This is a demo response from your AI assistant.', 'bot');
-        }, 1500);
+            if (data.reply) {
+                appendMessage(data.reply, 'bot');
+            } else if (data.error) {
+                appendMessage(`Error: ${data.error}`, 'bot');
+            }
+        })
+        .catch(error => {
+            hideTypingIndicator();
+            let errorMessage = 'Sorry, something went wrong. Please try again later.';
+            if (error.message) {
+                errorMessage = `Error: ${error.message}`;
+            } else if (typeof error === 'object' && error !== null) {
+                errorMessage = `Error: ${JSON.stringify(error)}`;
+            } else {
+                errorMessage = `Error: ${String(error)}`;
+            }
+            appendMessage(errorMessage, 'bot');
+            console.error('Error sending message:', error);
+        });
     }
 
     function appendMessage(text, type) {
