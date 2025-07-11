@@ -69,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ID Card Flip
+    const idCard = document.querySelector('.id-card');
+    if (idCard) {
+        idCard.addEventListener('click', () => {
+            idCard.classList.toggle('flipped');
+        });
+    }
+
     // Chatbot functionality
     const chatbotToggle = document.getElementById('chatbot-toggle');
     const chatbotWindow = document.getElementById('chatbot-window');

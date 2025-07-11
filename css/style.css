@@ -624,6 +624,99 @@ footer {
     cursor: not-allowed;
 }
 
+#id-card-section {
+    padding: 8rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.id-card-container {
+    perspective: 1000px;
+}
+
+.id-card {
+    width: 320px;
+    height: 192px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s;
+}
+
+.id-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.id-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.id-card-front,
+.id-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    background: linear-gradient(to br, #1a1a1a, #000000);
+    color: white;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.id-card-back {
+    transform: rotateY(180deg);
+}
+
+.id-card-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.id-card-header-left {
+    display: flex;
+    align-items: center;
+}
+
+.id-card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.id-card-header-right p {
+    text-align: right;
+}
+
+.id-card-body {
+    text-align: center;
+}
+
+.id-card-footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.id-card-back-header {
+    text-align: center;
+}
+
+.id-card-back-body span {
+    font-weight: bold;
+}
+
+.id-card-back-footer {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
 /* -- Responsive Styles for Mobile -- */
 @media (max-width: 768px) {
     nav ul {
