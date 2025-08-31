@@ -3,57 +3,599 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Circuit Dash</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Circuit Dash - Saquib's Portfolio</title>
     <style>
-        #game-canvas {
-            border: none; /* Removed border */
-            background-color: #000;
-            display: block;
-            margin: 20px auto;
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #game-container {
-            text-align: center;
-            padding-top: 100px;
-        }
-        #lap-counter {
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e);
             font-family: 'Press Start 2P', cursive;
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #gameCanvas {
+            border: 4px solid #00ff00;
+            background: #000;
+            image-rendering: pixelated;
+            box-shadow: 0 0 30px #00ff00;
+        }
+        
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00ff00;
+            font-size: 12px;
+            z-index: 10;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00ff00;
+            text-align: center;
+            font-size: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        #mobileControls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 20;
+        }
+        
+        .control-btn {
+            background: rgba(0,255,0,0.2);
+            border: 2px solid rgba(0,255,0,0.5);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: #00ff00;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            touch-action: manipulation;
+            box-shadow: 0 0 15px rgba(0,255,0,0.3);
+        }
+        
+        .control-btn:active {
+            background: rgba(0,255,0,0.4);
+            transform: scale(0.95);
+            box-shadow: 0 0 25px rgba(0,255,0,0.6);
+        }
+        
+        .dpad {
+            display: flex;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            #mobileControls { display: flex; }
+            #controls { display: none; }
+            #gameCanvas { width: 95vw; height: 50vh; }
+        }
+        
+        #backBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff0080;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #ff0080;
+        }
+        
+        #backBtn:hover {
+            background: #ff0060;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo"><a href="index.html">SK.</a></div>
-                <ul>
-                    <li><a href="index.html#projects">Projects</a></li>
-                    <li><a href="index.html#games">Games</a></li>
-                    <li><a href="index.html#experience">Experience</a></li>
-                    <li><a href="index.html#contact">Contact</a></li>
-                </ul>
-            </nav>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="gameUI">
+            <div>SPEED: <span id="speed">0</span> KM/H</div>
+            <div>LAP: <span id="lap">1</span>/3</div>
+            <div>TIME: <span id="time">0:00</span></div>
+            <div>BEST: <span id="best">--:--</span></div>
         </div>
-    </header>
-
-    <main>
-        <section id="game-container">
-            <h2>Circuit Dash</h2>
-            <canvas id="game-canvas" width="800" height="600"></canvas>
-            <div id="lap-counter">Lap: 0/3</div>
-            <p>Use Arrow Keys to Drive!</p>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Saquib Iqbal Khan</p>
+        <div id="controls">
+            ARROW KEYS: Steer | UP: Accelerate | DOWN: Brake | Complete 3 laps!
         </div>
-    </footer>
+        <div id="mobileControls">
+            <div class="dpad">
+                <div class="control-btn" id="leftBtn">←</div>
+                <div class="control-btn" id="upBtn">↑</div>
+                <div class="control-btn" id="rightBtn">→</div>
+            </div>
+            <div class="control-btn" id="downBtn">↓</div>
+        </div>
+        <button id="backBtn" onclick="window.location.href='index.html'">BACK</button>
+    </div>
 
-    <script src="js/circuit-dash.js"></script>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameState = {
+            lap: 1,
+            totalLaps: 3,
+            startTime: Date.now(),
+            bestTime: null,
+            gameComplete: false,
+            keys: {}
+        };
+        
+        // Car object
+        const car = {
+            x: 400,
+            y: 500,
+            width: 16,
+            height: 24,
+            angle: 0,
+            speed: 0,
+            maxSpeed: 6,
+            acceleration: 0.15,
+            friction: 0.92,
+            turnSpeed: 0.06,
+            color: '#ff4444',
+            trail: []
+        };
+        
+        // Track checkpoints for lap detection
+        let checkpoints = [
+            {x: 400, y: 500, passed: false}, // Start/finish
+            {x: 200, y: 200, passed: false}, // Top left
+            {x: 600, y: 200, passed: false}, // Top right
+            {x: 600, y: 400, passed: false}  // Right side
+        ];
+        
+        let currentCheckpoint = 0;
+        let sparkEffects = [];
+        
+        function showSparkEffect(x, y) {
+            for (let i = 0; i < 5; i++) {
+                sparkEffects.push({
+                    x: x + Math.random() * 20 - 10,
+                    y: y + Math.random() * 20 - 10,
+                    velX: (Math.random() - 0.5) * 4,
+                    velY: (Math.random() - 0.5) * 4,
+                    life: 30,
+                    color: '#ffff00'
+                });
+            }
+        }
+        
+        function updateSparkEffects() {
+            for (let i = sparkEffects.length - 1; i >= 0; i--) {
+                let spark = sparkEffects[i];
+                spark.x += spark.velX;
+                spark.y += spark.velY;
+                spark.life--;
+                if (spark.life <= 0) {
+                    sparkEffects.splice(i, 1);
+                }
+            }
+        }
+        
+        // Track walls (simple circuit)
+        let walls = [
+            // Outer walls
+            {x: 50, y: 50, width: 700, height: 20},   // Top
+            {x: 50, y: 50, width: 20, height: 500},   // Left
+            {x: 730, y: 50, width: 20, height: 500},  // Right
+            {x: 50, y: 530, width: 700, height: 20},  // Bottom
+            
+            // Inner walls
+            {x: 150, y: 150, width: 500, height: 20}, // Top inner
+            {x: 150, y: 150, width: 20, height: 300}, // Left inner
+            {x: 630, y: 150, width: 20, height: 300}, // Right inner
+            {x: 150, y: 430, width: 500, height: 20}  // Bottom inner
+        ];
+        
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            gameState.keys[e.code] = true;
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            gameState.keys[e.code] = false;
+        });
+        
+        // Mobile touch controls
+        function setupMobileControls() {
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+            const upBtn = document.getElementById('upBtn');
+            const downBtn = document.getElementById('downBtn');
+            
+            leftBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowLeft'] = true;
+            });
+            leftBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowLeft'] = false;
+            });
+            
+            rightBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowRight'] = true;
+            });
+            rightBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowRight'] = false;
+            });
+            
+            upBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowUp'] = true;
+            });
+            upBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowUp'] = false;
+            });
+            
+            downBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowDown'] = true;
+            });
+            downBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowDown'] = false;
+            });
+        }
+        
+        setupMobileControls();
+        
+        // Game functions
+        function updateCar() {
+            // Acceleration
+            if (gameState.keys['ArrowUp']) {
+                car.speed = Math.min(car.speed + car.acceleration, car.maxSpeed);
+            } else if (gameState.keys['ArrowDown']) {
+                car.speed = Math.max(car.speed - car.acceleration, -car.maxSpeed * 0.5);
+            } else {
+                car.speed *= car.friction;
+            }
+            
+            // Turning (only when moving)
+            if (Math.abs(car.speed) > 0.1) {
+                if (gameState.keys['ArrowLeft']) {
+                    car.angle -= car.turnSpeed * Math.abs(car.speed) / car.maxSpeed;
+                }
+                if (gameState.keys['ArrowRight']) {
+                    car.angle += car.turnSpeed * Math.abs(car.speed) / car.maxSpeed;
+                }
+            }
+            
+            // Calculate movement
+            let newX = car.x + Math.sin(car.angle) * car.speed;
+            let newY = car.y - Math.cos(car.angle) * car.speed;
+            
+            // Wall collision
+            let collision = false;
+            for (let wall of walls) {
+                if (newX < wall.x + wall.width &&
+                    newX + car.width > wall.x &&
+                    newY < wall.y + wall.height &&
+                    newY + car.height > wall.y) {
+                    collision = true;
+                    break;
+                }
+            }
+            
+            if (!collision) {
+                car.x = newX;
+                car.y = newY;
+                
+                // Add trail effect
+                if (Math.abs(car.speed) > 1) {
+                    car.trail.push({x: car.x + car.width/2, y: car.y + car.height/2, life: 30});
+                    if (car.trail.length > 20) car.trail.shift();
+                }
+            } else {
+                car.speed *= -0.1; // Gentler bounce
+                showSparkEffect(car.x, car.y);
+            }
+            
+            // Update trail
+            for (let i = car.trail.length - 1; i >= 0; i--) {
+                car.trail[i].life--;
+                if (car.trail[i].life <= 0) {
+                    car.trail.splice(i, 1);
+                }
+            }
+            
+            // Boundary collision
+            if (car.x < 0 || car.x + car.width > canvas.width ||
+                car.y < 0 || car.y + car.height > canvas.height) {
+                car.speed *= -0.3;
+            }
+        }
+        
+        function checkLapProgress() {
+            let checkpoint = checkpoints[currentCheckpoint];
+            let distance = Math.sqrt(
+                Math.pow(car.x - checkpoint.x, 2) + 
+                Math.pow(car.y - checkpoint.y, 2)
+            );
+            
+            if (distance < 60) { // Larger checkpoint area
+                checkpoint.passed = true;
+                currentCheckpoint = (currentCheckpoint + 1) % checkpoints.length;
+                
+                // Checkpoint effect
+                showCheckpointEffect(checkpoint.x, checkpoint.y);
+                
+                // Completed a lap
+                if (currentCheckpoint === 0 && checkpoint === checkpoints[0]) {
+                    gameState.lap++;
+                    showLapEffect();
+                    
+                    if (gameState.lap > gameState.totalLaps) {
+                        // Race finished
+                        let finishTime = Date.now() - gameState.startTime;
+                        if (!gameState.bestTime || finishTime < gameState.bestTime) {
+                            gameState.bestTime = finishTime;
+                        }
+                        gameState.gameComplete = true;
+                    }
+                    
+                    // Reset checkpoints
+                    checkpoints.forEach(cp => cp.passed = false);
+                }
+            }
+        }
+        
+        let lapEffects = [];
+        
+        function showCheckpointEffect(x, y) {
+            for (let i = 0; i < 8; i++) {
+                sparkEffects.push({
+                    x: x,
+                    y: y,
+                    velX: Math.cos(i * Math.PI / 4) * 3,
+                    velY: Math.sin(i * Math.PI / 4) * 3,
+                    life: 40,
+                    color: '#00ff00'
+                });
+            }
+        }
+        
+        function showLapEffect() {
+            lapEffects.push({
+                text: 'LAP ' + (gameState.lap - 1) + ' COMPLETE!',
+                life: 120,
+                y: canvas.height / 2
+            });
+        }
+        
+        function drawTrack() {
+            // Track surface
+            ctx.fillStyle = '#333';
+            ctx.fillRect(70, 70, 660, 460);
+            ctx.fillRect(170, 170, 460, 260);
+            
+            // Track lines
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([10, 10]);
+            
+            // Center line
+            ctx.beginPath();
+            ctx.rect(110, 110, 580, 380);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.rect(190, 190, 420, 220);
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+            
+            // Start/finish line
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(380, 530);
+            ctx.lineTo(420, 530);
+            ctx.stroke();
+            
+            // Checkered pattern for start/finish
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 2; j++) {
+                    if ((i + j) % 2 === 0) {
+                        ctx.fillStyle = '#fff';
+                    } else {
+                        ctx.fillStyle = '#000';
+                    }
+                    ctx.fillRect(380 + i * 10, 525 + j * 10, 10, 10);
+                }
+            }
+        }
+        
+        function drawWalls() {
+            ctx.fillStyle = '#666';
+            for (let wall of walls) {
+                ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+            }
+        }
+        
+        function drawTrail() {
+            for (let i = 0; i < car.trail.length; i++) {
+                let trail = car.trail[i];
+                ctx.fillStyle = `rgba(255, 68, 68, ${trail.life / 30 * 0.5})`;
+                ctx.beginPath();
+                ctx.arc(trail.x, trail.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function drawCar() {
+            ctx.save();
+            ctx.translate(car.x + car.width/2, car.y + car.height/2);
+            ctx.rotate(car.angle);
+            
+            // Car body with glow
+            ctx.shadowColor = car.color;
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = car.color;
+            ctx.fillRect(-car.width/2, -car.height/2, car.width, car.height);
+            
+            ctx.shadowBlur = 0;
+            
+            // Car details
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(-4, -8, 8, 4); // Windshield
+            ctx.fillStyle = '#000';
+            ctx.fillRect(-2, -12, 4, 2); // Front
+            
+            // Speed lines when moving fast
+            if (Math.abs(car.speed) > 4) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(-car.width/2 - 5 - i*3, -2 + i*2);
+                    ctx.lineTo(-car.width/2 - 15 - i*3, -2 + i*2);
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawSparkEffects() {
+            for (let spark of sparkEffects) {
+                ctx.fillStyle = spark.color;
+                ctx.globalAlpha = spark.life / 30;
+                ctx.beginPath();
+                ctx.arc(spark.x, spark.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        function drawLapEffects() {
+            ctx.font = '20px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            for (let effect of lapEffects) {
+                ctx.fillStyle = '#00ff00';
+                ctx.globalAlpha = effect.life / 120;
+                ctx.fillText(effect.text, canvas.width/2, effect.y);
+                effect.life--;
+                ctx.globalAlpha = 1;
+            }
+            lapEffects = lapEffects.filter(e => e.life > 0);
+        }
+        
+        function drawCheckpoints() {
+            for (let i = 0; i < checkpoints.length; i++) {
+                let cp = checkpoints[i];
+                if (i === currentCheckpoint) {
+                    ctx.fillStyle = '#00ff00';
+                } else if (cp.passed) {
+                    ctx.fillStyle = '#666';
+                } else {
+                    ctx.fillStyle = '#ffff00';
+                }
+                
+                ctx.beginPath();
+                ctx.arc(cp.x, cp.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function formatTime(ms) {
+            let seconds = Math.floor(ms / 1000);
+            let minutes = Math.floor(seconds / 60);
+            seconds = seconds % 60;
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
+        
+        function drawUI() {
+            document.getElementById('speed').textContent = Math.floor(Math.abs(car.speed) * 10);
+            document.getElementById('lap').textContent = Math.min(gameState.lap, gameState.totalLaps);
+            
+            let currentTime = Date.now() - gameState.startTime;
+            document.getElementById('time').textContent = formatTime(currentTime);
+            
+            if (gameState.bestTime) {
+                document.getElementById('best').textContent = formatTime(gameState.bestTime);
+            }
+        }
+        
+        function gameLoop() {
+            if (!gameState.gameComplete) {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update
+                updateCar();
+                checkLapProgress();
+                updateSparkEffects();
+                
+                // Draw
+                drawTrack();
+                drawWalls();
+                drawTrail();
+                drawCheckpoints();
+                drawCar();
+                drawSparkEffects();
+                drawLapEffects();
+                drawUI();
+                
+                requestAnimationFrame(gameLoop);
+            } else {
+                // Race complete screen
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.font = '24px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText('RACE COMPLETE!', canvas.width/2, canvas.height/2 - 40);
+                
+                ctx.font = '12px "Press Start 2P"';
+                ctx.fillText('BEST TIME: ' + formatTime(gameState.bestTime), canvas.width/2, canvas.height/2 + 20);
+                ctx.fillText('Press F5 to race again', canvas.width/2, canvas.height/2 + 50);
+            }
+        }
+        
+        // Start game
+        gameLoop();
+    </script>
 </body>
 </html>

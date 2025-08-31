@@ -3,57 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platformer Challenge</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Retro Platformer - Saquib's Portfolio</title>
     <style>
-        #game-canvas {
-            border: 1px solid var(--primary-color);
-            background-color: #000;
-            display: block;
-            margin: 20px auto;
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #game-container {
-            text-align: center;
-            padding-top: 100px;
-        }
-        #score-display {
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             font-family: 'Press Start 2P', cursive;
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #gameCanvas {
+            border: 4px solid #fff;
+            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 60%, #228B22 60%, #228B22 100%);
+            image-rendering: pixelated;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            font-size: 10px;
+        }
+        
+        #mobileControls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 20;
+        }
+        
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            touch-action: manipulation;
+        }
+        
+        .control-btn:active {
+            background: rgba(255,255,255,0.4);
+            transform: scale(0.95);
+        }
+        
+        .dpad {
+            display: flex;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            #mobileControls { display: flex; }
+            #controls { display: none; }
+            #gameCanvas { width: 95vw; height: 50vh; }
+        }
+        
+        #backBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        #backBtn:hover {
+            background: #ff5252;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo"><a href="index.html">SK.</a></div>
-                <ul>
-                    <li><a href="index.html#projects">Projects</a></li>
-                    <li><a href="index.html#games">Games</a></li>
-                    <li><a href="index.html#experience">Experience</a></li>
-                    <li><a href="index.html#contact">Contact</a></li>
-                </ul>
-            </nav>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div id="gameUI">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>LIVES: <span id="lives">3</span></div>
+            <div>LEVEL: <span id="level">1</span></div>
         </div>
-    </header>
-
-    <main>
-        <section id="game-container">
-            <h2>Platformer Challenge</h2>
-            <canvas id="game-canvas" width="800" height="400"></canvas>
-            <div id="score-display">Score: 0</div>
-            <p>Use Arrow Keys to Move and Jump!</p>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Saquib Iqbal Khan</p>
+        <div id="controls">
+ARROW KEYS or WASD: Move | SPACE/UP/W: Jump | Collect coins and avoid enemies!
         </div>
-    </footer>
+        <div id="mobileControls">
+            <div class="dpad">
+                <div class="control-btn" id="leftBtn">←</div>
+                <div class="control-btn" id="rightBtn">→</div>
+            </div>
+            <div class="control-btn" id="jumpBtn">↑</div>
+        </div>
+        <button id="backBtn" onclick="window.location.href='index.html'">BACK</button>
+    </div>
 
-    <script src="js/platformer.js"></script>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameState = {
+            score: 0,
+            lives: 3,
+            level: 1,
+            gameOver: false,
+            keys: {}
+        };
+        
+        // Player object
+        const player = {
+            x: 50,
+            y: 300,
+            width: 24,
+            height: 32,
+            velX: 0,
+            velY: 0,
+            speed: 5,
+            jumpPower: 14,
+            onGround: false,
+            color: '#ff4444',
+            direction: 1,
+            invulnerable: false,
+            invulnerableTime: 0
+        };
+        
+        // Game objects
+        let platforms = [
+            {x: 0, y: 350, width: 200, height: 50},
+            {x: 250, y: 280, width: 100, height: 20},
+            {x: 400, y: 220, width: 100, height: 20},
+            {x: 550, y: 160, width: 100, height: 20},
+            {x: 700, y: 300, width: 100, height: 50}
+        ];
+        
+        let coins = [
+            {x: 280, y: 240, collected: false},
+            {x: 430, y: 180, collected: false},
+            {x: 580, y: 120, collected: false},
+            {x: 730, y: 260, collected: false}
+        ];
+        
+        let enemies = [
+            {x: 300, y: 250, width: 20, height: 20, velX: 0.5, color: '#8B4513'},
+            {x: 600, y: 130, width: 20, height: 20, velX: -0.5, color: '#8B4513'}
+        ];
+        
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            gameState.keys[e.code] = true;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            gameState.keys[e.code] = false;
+            e.preventDefault();
+        });
+        
+        // Mobile touch controls
+        function setupMobileControls() {
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+            const jumpBtn = document.getElementById('jumpBtn');
+            
+            leftBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowLeft'] = true;
+            });
+            leftBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowLeft'] = false;
+            });
+            
+            rightBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowRight'] = true;
+            });
+            rightBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['ArrowRight'] = false;
+            });
+            
+            jumpBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys['Space'] = true;
+            });
+            jumpBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys['Space'] = false;
+            });
+        }
+        
+        setupMobileControls();
+        
+        // Game functions
+        function updatePlayer() {
+            // Horizontal movement
+            if (gameState.keys['ArrowLeft'] || gameState.keys['KeyA']) {
+                player.velX = -player.speed;
+                player.direction = -1;
+            } else if (gameState.keys['ArrowRight'] || gameState.keys['KeyD']) {
+                player.velX = player.speed;
+                player.direction = 1;
+            } else {
+                player.velX *= 0.8; // Friction
+            }
+            
+            // Jumping
+            if ((gameState.keys['Space'] || gameState.keys['ArrowUp'] || gameState.keys['KeyW']) && player.onGround) {
+                player.velY = -player.jumpPower;
+                player.onGround = false;
+            }
+            
+            // Apply gravity (reduced for easier jumping)
+            player.velY += 0.4;
+            
+            // Update position
+            player.x += player.velX;
+            player.y += player.velY;
+            
+            // Platform collision
+            player.onGround = false;
+            for (let platform of platforms) {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y) {
+                    
+                    if (player.velY > 0) { // Falling
+                        player.y = platform.y - player.height;
+                        player.velY = 0;
+                        player.onGround = true;
+                    }
+                }
+            }
+            
+            // Boundary collision
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y > canvas.height) {
+                gameState.lives--;
+                resetPlayer();
+            }
+        }
+        
+        function updateEnemies() {
+            for (let enemy of enemies) {
+                enemy.x += enemy.velX;
+                
+                // Bounce off platforms
+                let onPlatform = false;
+                for (let platform of platforms) {
+                    if (enemy.x + enemy.width > platform.x && 
+                        enemy.x < platform.x + platform.width &&
+                        enemy.y + enemy.height >= platform.y &&
+                        enemy.y + enemy.height <= platform.y + platform.height) {
+                        onPlatform = true;
+                        break;
+                    }
+                }
+                
+                if (!onPlatform || enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+                    enemy.velX *= -1;
+                }
+            }
+        }
+        
+        function checkCollisions() {
+            // Coin collection (larger hitbox)
+            for (let coin of coins) {
+                if (!coin.collected &&
+                    player.x < coin.x + 20 &&
+                    player.x + player.width > coin.x - 4 &&
+                    player.y < coin.y + 20 &&
+                    player.y + player.height > coin.y - 4) {
+                    coin.collected = true;
+                    gameState.score += 100;
+                    
+                    // Coin collection effect
+                    showEffect(coin.x, coin.y, '+100', '#FFD700');
+                }
+            }
+            
+            // Enemy collision (with invulnerability)
+            if (!player.invulnerable) {
+                for (let enemy of enemies) {
+                    if (player.x < enemy.x + enemy.width - 4 &&
+                        player.x + player.width > enemy.x + 4 &&
+                        player.y < enemy.y + enemy.height - 4 &&
+                        player.y + player.height > enemy.y + 4) {
+                        gameState.lives--;
+                        player.invulnerable = true;
+                        player.invulnerableTime = 120; // 2 seconds at 60fps
+                        showEffect(player.x, player.y, '-1 LIFE', '#ff0000');
+                        if (gameState.lives > 0) {
+                            // Don't reset position, just make invulnerable
+                        } else {
+                            resetPlayer();
+                        }
+                    }
+                }
+            }
+            
+            // Update invulnerability
+            if (player.invulnerable) {
+                player.invulnerableTime--;
+                if (player.invulnerableTime <= 0) {
+                    player.invulnerable = false;
+                }
+            }
+        }
+        
+        function resetPlayer() {
+            player.x = 50;
+            player.y = 300;
+            player.velX = 0;
+            player.velY = 0;
+            
+            if (gameState.lives <= 0) {
+                gameState.gameOver = true;
+            }
+        }
+        
+        // Effects system
+        let effects = [];
+        
+        function showEffect(x, y, text, color) {
+            effects.push({
+                x: x,
+                y: y,
+                text: text,
+                color: color,
+                life: 60,
+                velY: -2
+            });
+        }
+        
+        function updateEffects() {
+            for (let i = effects.length - 1; i >= 0; i--) {
+                let effect = effects[i];
+                effect.y += effect.velY;
+                effect.life--;
+                if (effect.life <= 0) {
+                    effects.splice(i, 1);
+                }
+            }
+        }
+        
+        function drawEffects() {
+            ctx.font = '12px "Press Start 2P"';
+            for (let effect of effects) {
+                ctx.fillStyle = effect.color;
+                ctx.globalAlpha = effect.life / 60;
+                ctx.fillText(effect.text, effect.x, effect.y);
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        function drawPlayer() {
+            // Flashing effect when invulnerable
+            if (player.invulnerable && Math.floor(player.invulnerableTime / 10) % 2) {
+                ctx.globalAlpha = 0.5;
+            }
+            
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Simple face
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(player.x + 6, player.y + 8, 4, 4);
+            ctx.fillRect(player.x + 14, player.y + 8, 4, 4);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(player.x + 8, player.y + 16, 8, 2);
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        function drawPlatforms() {
+            ctx.fillStyle = '#8B4513';
+            for (let platform of platforms) {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                
+                // Grass texture
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(platform.x, platform.y, platform.width, 4);
+                ctx.fillStyle = '#8B4513';
+            }
+        }
+        
+        function drawCoins() {
+            for (let coin of coins) {
+                if (!coin.collected) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.beginPath();
+                    ctx.arc(coin.x + 8, coin.y + 8, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#FFA500';
+                    ctx.beginPath();
+                    ctx.arc(coin.x + 8, coin.y + 8, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        function drawEnemies() {
+            for (let enemy of enemies) {
+                ctx.fillStyle = enemy.color;
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                
+                // Simple face
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(enemy.x + 4, enemy.y + 4, 3, 3);
+                ctx.fillRect(enemy.x + 13, enemy.y + 4, 3, 3);
+            }
+        }
+        
+        function drawUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('lives').textContent = gameState.lives;
+            document.getElementById('level').textContent = gameState.level;
+        }
+        
+        function gameLoop() {
+            if (!gameState.gameOver) {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update
+                updatePlayer();
+                updateEnemies();
+                checkCollisions();
+                updateEffects();
+                
+                // Draw
+                drawPlatforms();
+                drawCoins();
+                drawEnemies();
+                drawPlayer();
+                drawEffects();
+                drawUI();
+                
+                // Win condition
+                if (coins.every(coin => coin.collected)) {
+                    ctx.fillStyle = 'rgba(0,255,0,0.8)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '24px "Press Start 2P"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('YOU WIN!', canvas.width/2, canvas.height/2);
+                    ctx.font = '12px "Press Start 2P"';
+                    ctx.fillText('SCORE: ' + gameState.score, canvas.width/2, canvas.height/2 + 40);
+                    ctx.fillText('Press F5 to play again', canvas.width/2, canvas.height/2 + 70);
+                    return;
+                }
+                
+                requestAnimationFrame(gameLoop);
+            } else {
+                // Game over screen
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = '24px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+                ctx.font = '12px "Press Start 2P"';
+                ctx.fillText('FINAL SCORE: ' + gameState.score, canvas.width/2, canvas.height/2 + 40);
+                ctx.fillText('Press F5 to restart', canvas.width/2, canvas.height/2 + 70);
+            }
+        }
+        
+        // Start game
+        gameLoop();
+    </script>
 </body>
 </html>

@@ -37,6 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(section);
     });
 
+    // Skills animation based on scroll direction
+    let lastScrollTop = 0;
+    const skillsTrack = document.getElementById('skills-track');
+    
+    if (skillsTrack) {
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop) {
+                // Scrolling down - move right to left (normal)
+                skillsTrack.classList.remove('reverse');
+                skillsTrack.style.animationPlayState = 'running';
+            } else if (scrollTop < lastScrollTop) {
+                // Scrolling up - move left to right (reverse)
+                skillsTrack.classList.add('reverse');
+                skillsTrack.style.animationPlayState = 'running';
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, { passive: true });
+    }
+
     // Cursor Trail Animation
     const cursorTrail = document.createElement('div');
     cursorTrail.classList.add('cursor-trail');
@@ -265,7 +287,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: userMessage })
+                body: JSON.stringify({ 
+                    message: userMessage,
+                    timestamp: new Date().toISOString()
+                })
             })
             .then(response => {
                 if (!response.ok) {
